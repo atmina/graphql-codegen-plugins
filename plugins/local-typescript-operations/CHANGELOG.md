@@ -1,0 +1,26 @@
+# @atmina/local-typescript-operations
+
+## 0.4.7
+
+### Patch Changes
+
+- 4310564: Correct author and repo information, add README
+
+## 0.4.6
+
+### Patch Changes
+
+- 2781ca3: Remove "type": "module"
+
+## 0.4.5
+
+### Patch Changes
+
+- d2255c1: Republish to include plugin files
+
+## 0.4.4
+
+### Patch Changes
+
+- a18d8bf: Fixes an issue with the `skipTypename` config option that crashed codegen
+- 2555cb8: Fix error when no fragments are imported

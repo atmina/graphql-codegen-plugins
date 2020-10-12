@@ -1,0 +1,6 @@
+query BasicQuery {
+    shelves {
+        id
+        floor
+    }
+}

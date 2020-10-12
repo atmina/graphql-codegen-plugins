@@ -1,0 +1,5 @@
+query QueryWithNestedInput($input: BookFilterInput!) {
+    books(filter: $input) {
+        title
+    }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@atmina/codegen-tester",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "echo ok"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@graphql-codegen/cli": "^1.20.1",
+    "@jest/globals": "^26.6.2",
+    "graphql": "15.3.0",
+    "jest": "^26.6.3"
+  }
+}

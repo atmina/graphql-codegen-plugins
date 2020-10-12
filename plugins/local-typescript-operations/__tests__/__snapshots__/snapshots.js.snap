@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: basic_mutation.generated.ts 1`] = `
+"import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
+
+export type CreateAuthorInput = {
+  name: string;
+};
+
+export type BasicMutationMutationVariables = Types.Exact<{
+  input: CreateAuthorInput;
+}>;
+
+
+export type BasicMutationMutation = { __typename?: 'Mutation', authorCreate: { __typename?: 'Author', id: string } };
+
+"
+`;
+
+exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: basic_query.generated.ts 1`] = `
+"import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
+
+
+export type BasicQueryQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type BasicQueryQuery = { __typename?: 'Query', shelves: Array<{ __typename?: 'Shelf', id: string, floor: number }> };
+
+"
+`;
+
+exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: query_with_exports.generated.ts 1`] = `
+"import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
+
+
+export type QueryWithExportsQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type QueryWithExportsQuery = { __typename?: 'Query', shelves: Array<{ __typename?: 'Shelf' ;items: Array<Borrowable>}> };
+
+export type Borrowable = Borrowable_Book | Borrowable_VideoGame;
+
+export type Borrowable_Book = { __typename?: 'Book', id: string, title: string ;author: Author};
+
+export type Borrowable_VideoGame = { __typename?: 'VideoGame', publisher: string, id: string, title: string };
+
+export type Author = { __typename?: 'Author', id: string, name: string };
+"
+`;
+
+exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: query_with_fragments.generated.ts 1`] = `
+"import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
+
+
+export type QueryWithFragmentsQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type QueryWithFragmentsQuery = { __typename?: 'Query', shelves: Array<{ __typename?: 'Shelf', items: Array<(
+      { __typename?: 'Book' }
+      & Borrowable_Book_Fragment
+    ) | (
+      { __typename?: 'VideoGame' }
+      & Borrowable_VideoGame_Fragment
+    )> }> };
+
+
+export type Borrowable_Book_Fragment = { __typename?: 'Book', id: string, title: string, author: (
+    { __typename?: 'Author' }
+    & AuthorFragment
+  ) };
+
+export type Borrowable_VideoGame_Fragment = { __typename?: 'VideoGame', publisher: string, id: string, title: string };
+
+export type BorrowableFragment = Borrowable_Book_Fragment | Borrowable_VideoGame_Fragment;
+
+
+export type AuthorFragment = { __typename?: 'Author', id: string, name: string };
+
+"
+`;
+
+exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: query_with_imported_fragments.generated.ts 1`] = `
+"import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
+
+import { Borrowable_Book_Fragment, Borrowable_VideoGame_Fragment } from './query_with_fragments.generated';
+
+export type QueryWithImportedFragmentsQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type QueryWithImportedFragmentsQuery = { __typename?: 'Query', book: (
+    { __typename?: 'Book' }
+    & Borrowable_Book_Fragment
+  ) };
+
+"
+`;
+
+exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: query_with_nested_input.generated.ts 1`] = `
+"import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
+
+export type BookFilterInput = {
+  author?: StringQueryOperatorInput | null;
+  title?: StringQueryOperatorInput | null;
+};
+
+export type StringQueryOperatorInput = {
+  eq?: string | null;
+  ne?: string | null;
+  in?: Array<string | null> | null;
+  nin?: Array<string | null> | null;
+  regex?: string | null;
+  glob?: string | null;
+};
+
+export type QueryWithNestedInputQueryVariables = Types.Exact<{
+  input: BookFilterInput;
+}>;
+
+
+export type QueryWithNestedInputQuery = { __typename?: 'Query', books: Array<{ __typename?: 'Book', title: string }> };
+
+"
+`;

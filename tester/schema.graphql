@@ -1,0 +1,80 @@
+type Author {
+    id: ID!
+    name: String!
+    books: [Book!]!
+}
+
+type Book implements Borrowable {
+    id: ID!
+    title: String!
+    author: Author!
+    genre: Genre
+}
+
+input BookFilterInput {
+    author: StringQueryOperatorInput
+    title: StringQueryOperatorInput
+}
+
+interface Borrowable {
+    id: ID!
+    title: String!
+}
+
+input CreateAuthorInput {
+    name: String!
+}
+
+input CreateBookInput {
+    author: ID!
+    title: String!
+}
+
+type Mutation {
+    authorCreate(input: CreateAuthorInput!): Author!
+    bookCreate(input: CreateBookInput!): Book!
+}
+
+type Query {
+    book(id: ID!): Book!
+    books(filter: BookFilterInput!): [Book!]!
+    borrowable(id: ID!): Borrowable!
+    shelf(id: ID!): Shelf
+    shelves: [Shelf!]!
+    videoGame(id: ID!): VideoGame!
+    videoGames(filter: VideoGameFilterInput!): [VideoGame!]!
+}
+
+type Shelf {
+    id: ID!
+    floor: Int!
+    items: [Borrowable!]!
+}
+
+input StringQueryOperatorInput {
+    eq: String
+    ne: String
+    in: [String]
+    nin: [String]
+    regex: String
+    glob: String
+}
+
+type VideoGame implements Borrowable {
+    id: ID!
+    title: String!
+    publisher: String!
+}
+
+input VideoGameFilterInput {
+    publisher: StringQueryOperatorInput
+    title: StringQueryOperatorInput
+}
+
+enum Genre {
+    CRIME
+    FANTASY
+    THRILLER
+}
+
+directive @export(exportName: String!) on FIELD

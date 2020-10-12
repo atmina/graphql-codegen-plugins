@@ -1,0 +1,65 @@
+image: node:14.15.1
+
+stages:
+  - test
+  - prepare
+  - publish
+
+test:enum-typescript:
+  stage: test
+  script:
+    - cd plugins/only-enum-types
+    - yarn
+    - yarn build
+    - yarn test
+
+test:local-typescript-operations:
+  stage: test
+  script:
+    - cd plugins/local-typescript-operations
+    - yarn
+    - yarn build
+    - yarn test
+
+create_release_mr:
+  stage: prepare
+  script:
+    - yarn
+    - yarn changeset version
+    - create_and_push_commit
+    - create_mr
+  only:
+    refs:
+      - master
+  except:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /Version bump/
+  when: manual
+
+release_changes:
+  stage: publish
+  script:
+    - set_npm_auth_config
+    - yarn
+    # If publish fails, we don't want the pipeline to crash; only when grep exits non-zero too
+    - set +o pipefail
+    # Take the output of yarn changeset publish
+    # Redirect stderr to stdout so we can grep on it
+    # Redirect original stdout to temporary fd 3
+    # Use tee to print to CI and pipe to grep
+    # grep for flawed E403
+    # revert redirects of stdout and stderr
+    # An issue on this topic is opened here: https://github.com/atlassian/changesets/issues/530
+    - '{ yarn changeset publish 2>&1 1>&3 | tee /dev/stderr | grep E403 1>&2; } 3>&1'
+    # For good measure
+    - set -o pipefail
+  only:
+    refs:
+      - master
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /Version bump/
+  when: manual
+
+before_script:
+  - set -euxo pipefail
+  - . ci-functions.sh

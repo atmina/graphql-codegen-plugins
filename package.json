@@ -1,0 +1,22 @@
+{
+  "name": "@atmina/typescript-graphql-codegen",
+  "description": "GraphQL Codegen for the ATMINA Solutions GmbH",
+  "main": "index.js",
+  "repository": "https://github.com/ATMINA/graphql-codegen-plugins.git",
+  "author": "ATMINA Solutions GmbH <info@atmina.de>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "prettier:check": "prettier --check 'plugins/**/*.ts'",
+    "prettier:write": "prettier --write 'plugins/**/*.ts'",
+    "postinstall": "yarn workspaces run build"
+  },
+  "workspaces": [
+    "plugins/*",
+    "tester"
+  ],
+  "devDependencies": {
+    "@changesets/cli": "^2.13.0",
+    "prettier": "^2.2.1"
+  }
+}

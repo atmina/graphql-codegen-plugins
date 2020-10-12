@@ -1,0 +1,25 @@
+query QueryWithFragments {
+    shelves {
+        items {
+            ...Borrowable
+        }
+    }
+}
+
+fragment Borrowable on Borrowable {
+    id
+    title
+    ... on Book {
+        author {
+            ...Author
+        }
+    }
+    ... on VideoGame {
+        publisher
+    }
+}
+
+fragment Author on Author {
+    id
+    name
+}

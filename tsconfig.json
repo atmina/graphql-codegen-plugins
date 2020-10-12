@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./lib",
+    "strict": true,
+    "downlevelIteration": true
+  },
+  "include": [
+    "plugins"
+  ],
+  "exclude": ["node_modules", "**/__tests__/*"],
+  "baseUrl": ".",
+  "paths": {
+    "@atmina/local-typescript-operations": ["plugins/local-typescript-operations/src/index.ts"],
+    "@atmina/enum-only-types": ["plugins/enum-typescript/src/index.ts"]
+  }
+}
+

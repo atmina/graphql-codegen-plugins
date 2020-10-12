@@ -1,0 +1,5 @@
+query QueryWithImportedFragments {
+    book(id: "42") {
+        ...Borrowable
+    }
+}

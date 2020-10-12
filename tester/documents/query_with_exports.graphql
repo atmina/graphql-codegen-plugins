@@ -1,0 +1,17 @@
+query QueryWithExports {
+    shelves {
+        items @export(exportName: "Borrowable") {
+            id
+            title
+            ... on Book {
+                author @export(exportName: "Author") {
+                    id
+                    name
+                }
+            }
+            ... on VideoGame {
+                publisher
+            }
+        }
+    }
+}

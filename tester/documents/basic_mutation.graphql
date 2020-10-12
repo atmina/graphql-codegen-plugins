@@ -1,0 +1,5 @@
+mutation BasicMutation($input: CreateAuthorInput!) {
+    authorCreate(input: $input) {
+        id
+    }
+}
