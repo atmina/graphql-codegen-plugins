@@ -805,7 +805,7 @@ const getSubTypeNames = (
   const subTypes = subFields.map((field) => getBaseType(field.type)).filter(fieldedGraphQLTypeFilter);
   const subTypeNames = subTypes.map((type) => type.name);
 
-  const newPrevious = [...requiredTypes, ...subTypeNames, ...previouslyReferenced];
+  const newPrevious = [...requiredTypes, ...previouslyReferenced];
   const newRequired = subTypeNames.filter((name) => !newPrevious.includes(name));
 
   const foundTypes = [...subTypeNames, ...getSubTypeNames(schema, newRequired, newPrevious)];
