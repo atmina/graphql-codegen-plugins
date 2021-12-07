@@ -1,5 +1,11 @@
 # @atmina/local-typescript-operations
 
+## 0.4.8
+
+### Patch Changes
+
+- 7bff2c8: Fixed bug causing input types not to be generated recursively
+
 ## 0.4.7
 
 ### Patch Changes
