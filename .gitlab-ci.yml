@@ -35,6 +35,7 @@ create_release_mr:
     variables:
       - $CI_COMMIT_MESSAGE =~ /Version bump/
   when: manual
+  tags: [courage-deploy]
 
 release_changes:
   stage: publish
