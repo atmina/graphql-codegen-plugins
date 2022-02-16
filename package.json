@@ -16,7 +16,7 @@
     "tester"
   ],
   "devDependencies": {
-    "@changesets/cli": "^2.13.0",
-    "prettier": "^2.2.1"
+    "@changesets/cli": "2.13.0",
+    "prettier": "2.2.1"
   }
 }
