@@ -6,6 +6,7 @@ tester('typescript-graphql-codegen', {
       extension: '.generated.ts',
       baseTypesPath: '/__generated__/types.ts',
     },
+    config: {"inlineFragmentTypes": "combine"},
     plugins: ['./lib/index.js'],
   }
 }).catch(console.error);

@@ -19,7 +19,7 @@ import {
 } from '@graphql-codegen/visitor-plugin-common';
 import {CodegenPlugin, getBaseType, PluginFunction, Types} from '@graphql-codegen/plugin-helpers';
 import {
-  concatAST,
+  concatAST, DirectiveNode,
   DocumentNode,
   FieldNode,
   FragmentDefinitionNode,
@@ -58,6 +58,14 @@ import {TsVisitor, TypeScriptOperationVariablesToObject} from '@graphql-codegen/
 import {TypeScriptDocumentsPluginConfig} from '@graphql-codegen/typescript-operations/config';
 import {Maybe} from 'graphql/jsutils/Maybe';
 import {FragmentImport, ImportDeclaration} from '@graphql-codegen/visitor-plugin-common/imports';
+
+// Copied from selection-set-to-object.ts in @graphql-codegen/visitor-plugin-common
+declare type FragmentSpreadUsage = {
+  fragmentName: string;
+  typeName: string;
+  onType: string;
+  selectionNodes: Array<SelectionNode>;
+}
 
 /**
  * A simplified (and slightly imprecise) version of a node for the function below
@@ -214,6 +222,16 @@ class CustomTsVisitor extends TsVisitor {
     }
 
     return super._getTypeForNode(node);
+  }
+
+  public ObjectTypeDefinition(node: ObjectTypeDefinitionNode, key: number | string | undefined, parent: any): string {
+    if (key === undefined) throw new Error('This cannot happen and is only needed for type-safety until Upgrade to graphql 16');
+    return super.ObjectTypeDefinition(node, key, parent);
+  }
+
+  public InterfaceTypeDefinition(node: InterfaceTypeDefinitionNode, key: number | string | undefined, parent: any): string {
+    if (key === undefined) throw new Error('This cannot happen and is only needed for type-safety until Upgrade to graphql 16');
+    return super.InterfaceTypeDefinition(node, key, parent);
   }
 }
 
@@ -388,16 +406,16 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
    *
    * @param selections A list of SelectionNodes of a selection set
    */
-  protected flattenSelectionSet(selections: ReadonlyArray<SelectionNode>): Map<string, Array<SelectionNode | string>> {
+  protected flattenSelectionSet(selections: ReadonlyArray<SelectionNode>): Map<string, Array<SelectionNode | FragmentSpreadUsage>> {
     if (!this._parentSchemaType) {
       return new Map();
     }
 
-    const isFieldNode = (node: SelectionNode | string | ExportMarkedTypeName): node is FieldNode => {
-      return typeof node !== 'string' && !('marker' in node) && node.kind === Kind.FIELD;
+    const isFieldNode = (node: SelectionNode | FragmentSpreadUsage | ExportMarkedTypeName): node is FieldNode => {
+      return (node as SelectionNode).kind === "Field";
     };
 
-    const map: Map<string, (SelectionNode | string | ExportMarkedTypeName)[]> = super.flattenSelectionSet(selections);
+    const map: Map<string, (SelectionNode | FragmentSpreadUsage | ExportMarkedTypeName)[]> = super.flattenSelectionSet(selections);
     for (const [currentTypeName, fields] of map.entries()) {
       const fieldsWithExports = fields.map((field) => {
         if (
@@ -415,7 +433,7 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
       map.set(currentTypeName, fieldsWithExports);
     }
 
-    return map as Map<string, Array<SelectionNode | string>>;
+    return map as Map<string, Array<SelectionNode | FragmentSpreadUsage>>;
   }
 
   /**
@@ -427,7 +445,7 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
   private _flattenFromType(
     selections: ReadonlyArray<SelectionNode>,
     type: GraphQLNamedType,
-  ): Map<string, Array<SelectionNode | string | ExportMarkedTypeName>> {
+  ): Map<string, Array<SelectionNode | FragmentSpreadUsage | ExportMarkedTypeName>> {
     if (!this._parentSchemaType || isEqualType(type, this._parentSchemaType)) {
       return this.flattenSelectionSet(selections);
     }
@@ -450,14 +468,14 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
    */
   protected buildSelectionSetString(
     parentSchemaType: GraphQLObjectType,
-    selectionNodes: Array<SelectionNode | string | ExportMarkedTypeName>,
+    selectionNodes: Array<SelectionNode | FragmentSpreadUsage | DirectiveNode | ExportMarkedTypeName>,
   ): string {
     const isExportMarkedType = (
-      selectionNode: SelectionNode | string | ExportMarkedTypeName,
+      selectionNode: SelectionNode | FragmentSpreadUsage | DirectiveNode | ExportMarkedTypeName,
     ): selectionNode is ExportMarkedTypeName => (selectionNode as ExportMarkedTypeName).marker;
 
     const exported = selectionNodes.filter(isExportMarkedType);
-    const forwarded = selectionNodes.filter((node) => !isExportMarkedType(node)) as (SelectionNode | string)[];
+    const forwarded = selectionNodes.filter((node) => !isExportMarkedType(node)) as (SelectionNode | FragmentSpreadUsage | DirectiveNode)[];
 
     const superBuildString = super.buildSelectionSetString(parentSchemaType, forwarded);
     if (exported.length === 0) {

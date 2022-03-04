@@ -1,5 +1,5 @@
 import {CodegenPlugin, PluginFunction} from '@graphql-codegen/plugin-helpers';
-import {parse, printSchema, visit} from 'graphql';
+import {InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode, parse, printSchema, visit} from 'graphql';
 import {TsVisitor} from '@graphql-codegen/typescript';
 
 /*
@@ -25,6 +25,18 @@ class EnumFilterVisitor {
   }
 }
 
+class UndefinedGuardTsVisitor extends TsVisitor {
+  public ObjectTypeDefinition(node: ObjectTypeDefinitionNode, key: number | string | undefined, parent: any): string {
+    if (key === undefined) throw new Error('This cannot happen and is only needed for type-safety until Upgrade to graphql 16');
+    return super.ObjectTypeDefinition(node, key, parent);
+  }
+
+  public InterfaceTypeDefinition(node: InterfaceTypeDefinitionNode, key: number | string | undefined, parent: any): string {
+    if (key === undefined) throw new Error('This cannot happen and is only needed for type-safety until Upgrade to graphql 16');
+    return super.InterfaceTypeDefinition(node, key, parent);
+  }
+}
+
 const plugin: PluginFunction = (schema, documents, config) => {
   const printedSchema = printSchema(schema);
   const astNode = parse(printedSchema);
@@ -32,7 +44,7 @@ const plugin: PluginFunction = (schema, documents, config) => {
   const filterVisitor = new EnumFilterVisitor();
   const filteredAst = visit(astNode, {enter: filterVisitor});
 
-  const visitor = new TsVisitor(schema, config);
+  const visitor = new UndefinedGuardTsVisitor(schema, config);
   const result = visit(filteredAst, {leave: visitor});
 
   return {

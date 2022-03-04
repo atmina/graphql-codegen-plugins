@@ -105,11 +105,11 @@ export type BookFilterInput = {
 
 export type StringQueryOperatorInput = {
   eq?: string | null;
-  ne?: string | null;
+  glob?: string | null;
   in?: Array<string | null> | null;
+  ne?: string | null;
   nin?: Array<string | null> | null;
   regex?: string | null;
-  glob?: string | null;
 };
 
 export type QueryWithNestedInputQueryVariables = Types.Exact<{
