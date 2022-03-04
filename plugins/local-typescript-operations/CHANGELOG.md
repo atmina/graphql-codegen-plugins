@@ -1,5 +1,11 @@
 # @atmina/local-typescript-operations
 
+## 0.5.0
+
+### Minor Changes
+
+- 6b04b59: Upgrade dependencies to graphql 15.8.0 and graphql-codegen 2.x
+
 ## 0.4.8
 
 ### Patch Changes
