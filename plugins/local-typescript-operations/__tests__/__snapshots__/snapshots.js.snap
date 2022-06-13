@@ -36,7 +36,7 @@ exports[`The plugin typescript-graphql-codegen should generate code that matches
 export type QueryWithExportsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type QueryWithExportsQuery = { __typename?: 'Query', shelves: Array<{ __typename?: 'Shelf' ;items: Array<Borrowable>}> };
+export type QueryWithExportsQuery = { __typename?: 'Query', shelves: Array<{ __typename?: 'Shelf', items: Array<Borrowable> }> };
 
 export type Borrowable = Borrowable_Book | Borrowable_VideoGame;
 

@@ -30,7 +30,7 @@ import {
   GraphQLOutputType,
   GraphQLSchema,
   GraphQLType,
-  InputObjectTypeDefinitionNode,
+  InputObjectTypeDefinitionNode, InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
   isEnumType,
   isEqualType,
@@ -233,6 +233,15 @@ class CustomTsVisitor extends TsVisitor {
     if (key === undefined) throw new Error('This cannot happen and is only needed for type-safety until Upgrade to graphql 16');
     return super.InterfaceTypeDefinition(node, key, parent);
   }
+
+  public InputValueDefinition(node: InputValueDefinitionNode,
+                              key?: number | string,
+                              parent?: any,
+                              _path?: ReadonlyArray<string | number>,
+                              ancestors?: ReadonlyArray<TypeDefinitionNode>
+  ): string {
+    return super.InputValueDefinition(node, key, parent, _path ? [..._path] : undefined, ancestors ? [...ancestors] : undefined);
+  }
 }
 
 /**
@@ -397,6 +406,26 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
     };
   }
 
+
+  protected buildSelectionSet(parentSchemaType: GraphQLObjectType, selectionNodes: Array<SelectionNode | FragmentSpreadUsage | DirectiveNode | ExportMarkedTypeName>): {
+    typeInfo: {
+      name: string;
+      type: string;
+    };
+    fields: string[];
+  } {
+    const isExportMarkedType = (
+      selectionNode: SelectionNode | FragmentSpreadUsage | DirectiveNode | ExportMarkedTypeName,
+    ): selectionNode is ExportMarkedTypeName => (selectionNode as ExportMarkedTypeName).marker;
+
+    const exported = selectionNodes.filter(isExportMarkedType);
+    const forwarded = selectionNodes.filter((node) => !isExportMarkedType(node)) as (SelectionNode | FragmentSpreadUsage | DirectiveNode)[];
+
+    const cheekyTrick = exported.map(({fieldName, exportedTypeName}) => ({name: {value: fieldName, kind: Kind.NAME}, type: exportedTypeName, kind: Kind.FIELD}));
+
+    return super.buildSelectionSet(parentSchemaType, [...forwarded, ...cheekyTrick]);
+  }
+
   /**
    * Flattens the selection set by trimming off irrelevant bits and converting fragments to a form that's easier to work
    *  with.
@@ -477,7 +506,9 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
     const exported = selectionNodes.filter(isExportMarkedType);
     const forwarded = selectionNodes.filter((node) => !isExportMarkedType(node)) as (SelectionNode | FragmentSpreadUsage | DirectiveNode)[];
 
-    const superBuildString = super.buildSelectionSetString(parentSchemaType, forwarded);
+    const superSelectionSet = super.buildSelectionSet(parentSchemaType, forwarded);
+    const superBuildString = super.selectionSetStringFromFields(superSelectionSet.fields.filter((f) => !!f)) ?? '';
+
     if (exported.length === 0) {
       return superBuildString;
     }
@@ -884,6 +915,8 @@ function getTypeContent(
   const reducedAst = visit(ast, {leave: astReducer});
 
   const tsVisitor = new CustomTsVisitor(schema, pluginConfig);
+
+  // @ts-expect-error Mismatch between graphql and graphql-codegen
   const generatedDefinitions = visit(reducedAst, {leave: tsVisitor});
 
   return generatedDefinitions.definitions.join('\n');

@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@atmina/codegen-tester": "^1.1.0",
-    "@graphql-codegen/near-operation-file-preset": "2.2.6",
+    "@graphql-codegen/near-operation-file-preset": "^2.2.12",
     "@types/node": "16.11.26",
     "graphql": "15.8.0",
     "jest": "27.5.1",
@@ -21,12 +21,12 @@
   },
   "peerDependencies": {
     "graphql": "^15.8.0",
-    "@graphql-codegen/near-operation-file-preset": "^2.2.6"
+    "@graphql-codegen/near-operation-file-preset": "^2.2.12"
   },
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^2.0.0",
-    "@graphql-codegen/typescript": "^2.0.0",
-    "@graphql-codegen/typescript-operations": "^2.0.0",
+    "@graphql-codegen/typescript": "^2.4.11",
+    "@graphql-codegen/typescript-operations": "^2.4.0",
     "auto-bind": "^4.0.0"
   },
   "files": [
