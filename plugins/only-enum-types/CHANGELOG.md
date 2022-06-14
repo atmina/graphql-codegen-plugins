@@ -1,5 +1,11 @@
 # @atmina/only-enum-types
 
+## 0.5.0
+
+### Minor Changes
+
+- 4ec6334: Deprecated plugin
+
 ## 0.4.0
 
 ### Minor Changes

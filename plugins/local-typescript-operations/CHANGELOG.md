@@ -1,5 +1,11 @@
 # @atmina/local-typescript-operations
 
+## 0.6.0
+
+### Minor Changes
+
+- 1e13d2d: Support visitor-plugin@>=2.8.0
+
 ## 0.5.0
 
 ### Minor Changes
