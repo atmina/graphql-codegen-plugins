@@ -9,8 +9,8 @@
   "dependencies": {},
   "devDependencies": {
     "@graphql-codegen/cli": "2.6.2",
-    "@jest/globals": "27.5.1",
+    "@jest/globals": "28.1.2",
     "graphql": "15.8.0",
-    "jest": "27.5.1"
+    "jest": "28.1.2"
   }
 }

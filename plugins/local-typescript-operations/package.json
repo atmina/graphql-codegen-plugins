@@ -16,7 +16,7 @@
     "@graphql-codegen/near-operation-file-preset": "^2.2.12",
     "@types/node": "16.11.26",
     "graphql": "15.8.0",
-    "jest": "27.5.1",
+    "jest": "28.1.2",
     "typescript": "^4.6.2"
   },
   "peerDependencies": {
