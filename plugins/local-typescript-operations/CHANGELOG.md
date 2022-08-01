@@ -1,5 +1,11 @@
 # @atmina/local-typescript-operations
 
+## 0.6.1
+
+### Patch Changes
+
+- 61f88c6: Fix type aliasing with export directive
+
 ## 0.6.0
 
 ### Minor Changes
