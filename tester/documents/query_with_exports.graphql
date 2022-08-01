@@ -1,6 +1,6 @@
 query QueryWithExports {
     shelves {
-        items @export(exportName: "Borrowable") {
+        items @export(exportName: "Item") {
             id
             title
             ... on Book {

@@ -1,25 +1,31 @@
-import {TypeScriptDocumentsVisitor} from '@graphql-codegen/typescript-operations';
+import {TypeScriptDocumentsPluginConfig, TypeScriptDocumentsVisitor} from '@graphql-codegen/typescript-operations';
 import {
   BaseSelectionSetProcessor,
   BaseVisitorConvertOptions,
   ConvertNameFn,
   DeclarationBlock,
+  FragmentImport,
   generateFragmentImportStatement,
   GetFragmentSuffixFn,
   getPossibleTypes,
+  ImportDeclaration,
   InterfaceOrVariable,
   LoadedFragment,
+  NameAndType,
   NormalizedScalarsMap,
   optimizeOperations,
   ParsedDocumentsConfig,
   PreResolveTypesProcessor,
+  PrimitiveField,
+  ProcessResult,
   SelectionSetProcessorConfig,
   SelectionSetToObject,
   wrapTypeWithModifiers,
 } from '@graphql-codegen/visitor-plugin-common';
 import {CodegenPlugin, getBaseType, PluginFunction, Types} from '@graphql-codegen/plugin-helpers';
 import {
-  concatAST, DirectiveNode,
+  concatAST,
+  DirectiveNode,
   DocumentNode,
   FieldNode,
   FragmentDefinitionNode,
@@ -27,10 +33,10 @@ import {
   GraphQLInterfaceType,
   GraphQLNamedType,
   GraphQLObjectType,
-  GraphQLOutputType,
+  GraphQLOutputType, GraphQLScalarType,
   GraphQLSchema,
   GraphQLType,
-  InputObjectTypeDefinitionNode, InputValueDefinitionNode,
+  InputObjectTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
   isEnumType,
   isEqualType,
@@ -55,9 +61,7 @@ import {
 } from 'graphql';
 import * as autoBind from 'auto-bind';
 import {TsVisitor, TypeScriptOperationVariablesToObject} from '@graphql-codegen/typescript';
-import {TypeScriptDocumentsPluginConfig} from '@graphql-codegen/typescript-operations/config';
 import {Maybe} from 'graphql/jsutils/Maybe';
-import {FragmentImport, ImportDeclaration} from '@graphql-codegen/visitor-plugin-common/imports';
 
 // Copied from selection-set-to-object.ts in @graphql-codegen/visitor-plugin-common
 declare type FragmentSpreadUsage = {
@@ -223,25 +227,6 @@ class CustomTsVisitor extends TsVisitor {
 
     return super._getTypeForNode(node);
   }
-
-  public ObjectTypeDefinition(node: ObjectTypeDefinitionNode, key: number | string | undefined, parent: any): string {
-    if (key === undefined) throw new Error('This cannot happen and is only needed for type-safety until Upgrade to graphql 16');
-    return super.ObjectTypeDefinition(node, key, parent);
-  }
-
-  public InterfaceTypeDefinition(node: InterfaceTypeDefinitionNode, key: number | string | undefined, parent: any): string {
-    if (key === undefined) throw new Error('This cannot happen and is only needed for type-safety until Upgrade to graphql 16');
-    return super.InterfaceTypeDefinition(node, key, parent);
-  }
-
-  public InputValueDefinition(node: InputValueDefinitionNode,
-                              key?: number | string,
-                              parent?: any,
-                              _path?: ReadonlyArray<string | number>,
-                              ancestors?: ReadonlyArray<TypeDefinitionNode>
-  ): string {
-    return super.InputValueDefinition(node, key, parent, _path ? [..._path] : undefined, ancestors ? [...ancestors] : undefined);
-  }
 }
 
 /**
@@ -313,6 +298,37 @@ type ExportNodeTypeMapping = {
 };
 
 /**
+ * Custom types processor to ensure that exported fields get to keep their name
+ */
+class CustomPreResolveTypesProcessor extends PreResolveTypesProcessor {
+  constructor(processorConfig: SelectionSetProcessorConfig) {
+    super(processorConfig);
+  }
+
+  exportAliases: Map<GraphQLObjectType | GraphQLInterfaceType, Map<string, string>> = new Map<GraphQLObjectType | GraphQLInterfaceType, Map<string, string>>();
+
+  registerExportAlias(parentSchemaType: GraphQLObjectType | GraphQLInterfaceType, fieldName: string, exportedTypeName: string) {
+    if (!this.exportAliases.has(parentSchemaType)) {
+      this.exportAliases.set(parentSchemaType, new Map<string, string>());
+    }
+
+    this.exportAliases.get(parentSchemaType)!.set(fieldName, exportedTypeName);
+  }
+
+  transformPrimitiveFields(schemaType: GraphQLObjectType | GraphQLInterfaceType, fields: PrimitiveField[]): ProcessResult {
+    const exportAliasMap = this.exportAliases.get(schemaType);
+
+    const regularFields = fields.filter((x) => !exportAliasMap?.has(x.fieldName));
+    const exportedFields = fields.filter((x) => exportAliasMap?.has(x.fieldName));
+
+    const transformedPrimitiveFields = super.transformPrimitiveFields(schemaType, regularFields) ?? [];
+    const exportedNameAndType = exportedFields.map((x): NameAndType => ({name: x.fieldName, type: exportAliasMap!.get(x.fieldName)!}));
+
+    return [...exportedNameAndType, ...transformedPrimitiveFields];
+  }
+}
+
+/**
  * Transformer class for graphql selection sets.
  *
  * Most functions here are copied from the original implementation and slightly adapted because they don't seem to be
@@ -320,7 +336,7 @@ type ExportNodeTypeMapping = {
  */
 class CustomSelectionSetToObject extends SelectionSetToObject {
   constructor(
-    processor: BaseSelectionSetProcessor<any>,
+    processor: CustomPreResolveTypesProcessor,
     scalars: NormalizedScalarsMap,
     schema: GraphQLSchema,
     convertName: ConvertNameFn<BaseVisitorConvertOptions>,
@@ -383,7 +399,7 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
    */
   public createNext(parentSchemaType: GraphQLNamedType, selectionSet: SelectionSetNode): SelectionSetToObject {
     return new CustomSelectionSetToObject(
-      this._processor,
+      this._processor as CustomPreResolveTypesProcessor,
       this._scalars,
       this._schema,
       this._convertName.bind(this),
@@ -420,6 +436,10 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
 
     const exported = selectionNodes.filter(isExportMarkedType);
     const forwarded = selectionNodes.filter((node) => !isExportMarkedType(node)) as (SelectionNode | FragmentSpreadUsage | DirectiveNode)[];
+
+    for (const {fieldName, exportedTypeName} of exported) {
+      (this._processor as CustomPreResolveTypesProcessor).registerExportAlias(parentSchemaType, fieldName, exportedTypeName);
+    }
 
     const cheekyTrick = exported.map(({fieldName, exportedTypeName}) => ({name: {value: fieldName, kind: Kind.NAME}, type: exportedTypeName, kind: Kind.FIELD}));
 
@@ -761,7 +781,7 @@ class CustomTypeScriptOperationsVisitor extends TypeScriptDocumentsVisitor {
         return wrapTypeWithModifiers(baseType, type, {wrapOptional, wrapArray});
       },
     };
-    const processor = new PreResolveTypesProcessor(processorConfig);
+    const processor = new CustomPreResolveTypesProcessor(processorConfig);
     this.setSelectionSetHandler(
       new CustomSelectionSetToObject(
         processor,

@@ -36,13 +36,13 @@ exports[`The plugin typescript-graphql-codegen should generate code that matches
 export type QueryWithExportsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type QueryWithExportsQuery = { __typename?: 'Query', shelves: Array<{ __typename?: 'Shelf', items: Array<Borrowable> }> };
+export type QueryWithExportsQuery = { __typename?: 'Query', shelves: Array<{ __typename?: 'Shelf', items: Array<Item> }> };
 
-export type Borrowable = Borrowable_Book | Borrowable_VideoGame;
+export type Item = Item_Book | Item_VideoGame;
 
-export type Borrowable_Book = { __typename?: 'Book', id: string, title: string ;author: Author};
+export type Item_Book = { __typename?: 'Book', id: string, title: string ;author: Author};
 
-export type Borrowable_VideoGame = { __typename?: 'VideoGame', publisher: string, id: string, title: string };
+export type Item_VideoGame = { __typename?: 'VideoGame', publisher: string, id: string, title: string };
 
 export type Author = { __typename?: 'Author', id: string, name: string };
 "
@@ -82,7 +82,7 @@ export type AuthorFragment = { __typename?: 'Author', id: string, name: string }
 exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: query_with_imported_fragments.generated.ts 1`] = `
 "import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
 
-import { Borrowable_Book_Fragment, Borrowable_VideoGame_Fragment } from './query_with_fragments.generated';
+import { Borrowable_Book_Fragment, Borrowable_VideoGame_Fragment } from './query_with_fragments.generated.js';
 
 export type QueryWithImportedFragmentsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
