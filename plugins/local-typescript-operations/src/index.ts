@@ -1,6 +1,5 @@
 import {TypeScriptDocumentsPluginConfig, TypeScriptDocumentsVisitor} from '@graphql-codegen/typescript-operations';
 import {
-  BaseSelectionSetProcessor,
   BaseVisitorConvertOptions,
   ConvertNameFn,
   DeclarationBlock,
@@ -33,7 +32,7 @@ import {
   GraphQLInterfaceType,
   GraphQLNamedType,
   GraphQLObjectType,
-  GraphQLOutputType, GraphQLScalarType,
+  GraphQLOutputType,
   GraphQLSchema,
   GraphQLType,
   InputObjectTypeDefinitionNode,
@@ -163,9 +162,10 @@ class CustomTsVisitor extends TsVisitor {
    * Original implementation returned `Scalar['${name}']`; this adaption resolves it from the internal map of scalars
    *
    * @param name Name of the scalar to get the type string for.
+   * @param type Whether the scalar is an input or output scalar.
    */
-  protected _getScalar(name: string): string {
-    return this.scalars[name] || super._getScalar(name);
+  protected _getScalar(name: string, type: 'input' | 'output'): string {
+    return this.scalars[name][type] || super._getScalar(name, type);
   }
 
   /**
@@ -190,9 +190,10 @@ class CustomTsVisitor extends TsVisitor {
    * call's code adding the nullable suffix
    *
    * @param node NamedTypeNode the type string should be generated for.
+   * @param isVisitingInputType Whether the Visitor is currently visiting an input type
    */
-  public NamedType(node: NamedTypeNode) {
-    return this._getTypeForNode(node) + this.nullableSuffix;
+  public NamedType(node: NamedTypeNode, isVisitingInputType: boolean) {
+    return this._getTypeForNode(node, isVisitingInputType) + this.nullableSuffix;
   }
 
   /**
@@ -215,8 +216,9 @@ class CustomTsVisitor extends TsVisitor {
    * Extended to prepend Types. to enum types; rest is handled by the default implementation
    *
    * @param node The node the type should be determined for
+   * @param isVisitingInputType Whether the Visitor is currently visiting an input type
    */
-  protected _getTypeForNode(node: NamedTypeNode) {
+  protected _getTypeForNode(node: NamedTypeNode, isVisitingInputType: boolean) {
     // The fixed signature of this is inaccurate. The values passed often (always?) don't a name.value field; just name
     const schemaType = this._schema.getType(node.name.value ?? node.name);
     if (schemaType && isEnumType(schemaType)) {
@@ -225,7 +227,7 @@ class CustomTsVisitor extends TsVisitor {
       );
     }
 
-    return super._getTypeForNode(node);
+    return super._getTypeForNode(node, isVisitingInputType);
   }
 }
 
@@ -259,13 +261,14 @@ class CustomOperationVariablesToObject extends TypeScriptOperationVariablesToObj
    * @param variable An operation Variable Definition to transform to a string
    */
   protected transformVariable<TDefinitionType extends InterfaceOrVariable>(variable: TDefinitionType): string {
-    let typeValue;
+    let typeValue: string;
     const prefix = this._namespacedImportName ? `${this._namespacedImportName}.` : '';
 
     const baseType = this._getBaseTypeNode(variable.type);
     const typeName = baseType.name.value;
     if (this._scalars[typeName]) {
-      typeValue = this._scalars[typeName];
+      const scalar = this._scalars[typeName];
+      typeValue = scalar.input ?? scalar.output;
     } else if (this._enumValues[typeName]?.sourceFile) {
       typeValue = this._enumValues[typeName].typeIdentifier || this._enumValues[typeName].sourceIdentifier || '';
     } else if (this._enumNames.includes(typeName)) {
@@ -775,6 +778,7 @@ class CustomTypeScriptOperationsVisitor extends TypeScriptDocumentsVisitor {
       namespacedImportName: this.config.namespacedImportName,
       convertName: this.convertName.bind(this),
       enumPrefix: this.config.enumPrefix,
+      enumSuffix: this.config.enumSuffix,
       scalars: this.scalars,
       formatNamedField,
       wrapTypeWithModifiers(baseType, type) {
@@ -804,6 +808,7 @@ class CustomTypeScriptOperationsVisitor extends TypeScriptDocumentsVisitor {
         this.config.namespacedImportName,
         enumsNames,
         this.config.enumPrefix,
+        this.config.enumSuffix,
         this.config.enumValues,
       ),
     );
