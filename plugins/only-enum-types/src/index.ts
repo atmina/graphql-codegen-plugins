@@ -37,12 +37,7 @@ class UndefinedGuardTsVisitor extends TsVisitor {
   }
 }
 
-const warnDeprecated = () =>   console.warn("@atmina/only-enum-types is deprecated! Use @graphql-codegen/typescript with the onlyEnum config instead.");
-
-
 const plugin: PluginFunction = (schema, documents, config) => {
-  warnDeprecated();
-
   const printedSchema = printSchema(schema);
   const astNode = parse(printedSchema);
 
@@ -53,8 +48,6 @@ const plugin: PluginFunction = (schema, documents, config) => {
 
   // @ts-expect-error Mismatch between graphql and graphql-codegen
   const result = visit(filteredAst, {leave: visitor});
-
-  warnDeprecated();
 
   return {
     prepend: visitor.getWrapperDefinitions(),
