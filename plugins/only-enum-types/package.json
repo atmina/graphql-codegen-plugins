@@ -1,6 +1,6 @@
 {
   "name": "@atmina/only-enum-types",
-  "version": "0.5.1",
+  "version": "0.6.0-rc.1",
   "description": "GraphQL Codegen plugin outputting TypeScript definitions for enum types only",
   "main": "lib/index.js",
   "repository": "https://github.com/ATMINA/graphql-codegen-plugins.git",
@@ -15,15 +15,15 @@
     "@atmina/codegen-tester": "^1.1.0",
     "@types/node": "16.11.26",
     "graphql": "15.8.0",
-    "typescript": "^4.6.2"
+    "typescript": "^5.0.0"
   },
   "peerDependencies": {
     "graphql": "^15.8.0"
   },
   "dependencies": {
-    "@graphql-codegen/plugin-helpers": "^2.0.0",
-    "@graphql-codegen/typescript": "^2.0.0",
-    "@graphql-codegen/typescript-operations": "^2.0.0",
+    "@graphql-codegen/plugin-helpers": "^5.0.0",
+    "@graphql-codegen/typescript": "^4.0.0",
+    "@graphql-codegen/typescript-operations": "^4.0.0",
     "auto-bind": "^4.0.0"
   },
   "files": [

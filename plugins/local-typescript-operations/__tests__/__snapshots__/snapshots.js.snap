@@ -82,7 +82,7 @@ export type AuthorFragment = { __typename?: 'Author', id: string, name: string }
 exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: query_with_imported_fragments.generated.ts 1`] = `
 "import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
 
-import { Borrowable_Book_Fragment, Borrowable_VideoGame_Fragment } from './query_with_fragments.generated.js';
+import { Borrowable_Book_Fragment, Borrowable_VideoGame_Fragment } from './query_with_fragments.generated';
 
 export type QueryWithImportedFragmentsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 

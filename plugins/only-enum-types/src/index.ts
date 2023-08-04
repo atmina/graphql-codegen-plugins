@@ -37,7 +37,7 @@ class UndefinedGuardTsVisitor extends TsVisitor {
   }
 }
 
-const plugin: PluginFunction = (schema, documents, config) => {
+export const plugin: PluginFunction = (schema, documents, config) => {
   const printedSchema = printSchema(schema);
   const astNode = parse(printedSchema);
 
@@ -54,7 +54,3 @@ const plugin: PluginFunction = (schema, documents, config) => {
     content: result.definitions.join('\n'),
   };
 };
-
-const pluginConf: CodegenPlugin = {plugin};
-
-module.exports = pluginConf;

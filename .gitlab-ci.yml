@@ -41,11 +41,7 @@ release_changes:
   script:
     - set_npm_auth_config
     - yarn
-    # If publish fails, we don't want the pipeline to crash; only when grep exits non-zero too
-    - set +o pipefail
     - yarn changeset publish
-    # For good measure
-    - set -o pipefail
   only:
     refs:
       - master
