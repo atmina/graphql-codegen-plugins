@@ -1,5 +1,11 @@
 # @atmina/only-enum-types
 
+## 0.5.1
+
+### Patch Changes
+
+- a365af7: Removed deprecation notice
+
 ## 0.5.0
 
 ### Minor Changes
