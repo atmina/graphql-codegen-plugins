@@ -1,5 +1,15 @@
 # @atmina/only-enum-types
 
+## 0.6.0
+
+### Minor Changes
+
+- 81b445e: Upgrade all GraphQL CLI packages
+
+### Patch Changes
+
+- 7772a56: Remove deprecation warning from code
+
 ## 0.5.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @atmina/local-typescript-operations
 
+## 0.7.0
+
+### Minor Changes
+
+- 81b445e: Upgrade all GraphQL CLI packages
+
 ## 0.6.1
 
 ### Patch Changes

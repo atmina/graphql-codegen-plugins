@@ -1,6 +1,6 @@
 {
   "name": "@atmina/only-enum-types",
-  "version": "0.6.0-rc.1",
+  "version": "0.6.0",
   "description": "GraphQL Codegen plugin outputting TypeScript definitions for enum types only",
   "main": "lib/index.js",
   "repository": "https://github.com/ATMINA/graphql-codegen-plugins.git",
