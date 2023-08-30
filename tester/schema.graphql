@@ -1,3 +1,5 @@
+union ExampleUnion = Author | Shelf
+
 type Author {
     id: ID!
     name: String!
@@ -41,6 +43,7 @@ type Query {
     borrowable(id: ID!): Borrowable!
     shelf(id: ID!): Shelf
     shelves: [Shelf!]!
+    unionExample: ExampleUnion!
     videoGame(id: ID!): VideoGame!
     videoGames(filter: VideoGameFilterInput!): [VideoGame!]!
 }

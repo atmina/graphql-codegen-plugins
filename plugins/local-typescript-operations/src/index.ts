@@ -92,6 +92,7 @@ const getNamedTypeName = (variableDef: DefNode): string =>
  *  it is removed by returning null.
  *
  * Enum and Scalar definitions are excluded as they are already defined in a "global" scope.
+ * Union definitions are excluded as they guaranteed not to be used and only result in broken types across all operations.
  */
 class TypeCollectorVisitor {
   typesToInclude: string[];
@@ -114,6 +115,10 @@ class TypeCollectorVisitor {
   }
 
   public ScalarTypeDefinition() {
+    return null;
+  }
+
+  public UnionTypeDefinition() {
     return null;
   }
 
@@ -184,7 +189,7 @@ class CustomTsVisitor extends TsVisitor {
   }
 
   /**
-   * Called by the TsVisitor to transform a NamedType to it's string representation
+   * Called by the TsVisitor to transform a NamedType to its string representation
    *
    * The original implementation wrapped the result of a super call in Maybe<>; this adaption is a copy from that super
    * call's code adding the nullable suffix
@@ -197,7 +202,7 @@ class CustomTsVisitor extends TsVisitor {
   }
 
   /**
-   * Called by the TsVisitor to transform a ListType to it's string representation
+   * Called by the TsVisitor to transform a ListType to its string representation
    *
    * The original implementation wrapped the result of a super call in Maybe<>; this adaption is a copy from that super
    * call's code adding the nullable suffix
@@ -756,7 +761,7 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
 
 /**
  * A custom extension of the visitor that generates the typescript operations code to generate code as defined in the
- *  concept. The key element here is setting a custom variables transformer.
+ *  concept. The key element here is setting a custom variable's transformer.
  */
 class CustomTypeScriptOperationsVisitor extends TypeScriptDocumentsVisitor {
   constructor(schema: GraphQLSchema, config: TypeScriptDocumentsPluginConfig, allFragments: LoadedFragment[]) {
@@ -927,7 +932,7 @@ function getTypeContent(
   schema: GraphQLSchema,
   pluginConfig: any,
 ): string[] {
-  // Note: This is not perfect because requiredTypeNames can contain scalars and enums but they are thrown out
+  // Note: This is not perfect because requiredTypeNames can contain scalars and enums, but they are thrown out
   //  in the process of searching type definitions either way.
   const requiredTypeNames = documents
     .map((document) => document.document)

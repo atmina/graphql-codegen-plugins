@@ -29,6 +29,18 @@ export type BasicQueryQuery = { __typename?: 'Query', shelves: Array<{ __typenam
 "
 `;
 
+exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: query_for_union.generated.ts 1`] = `
+"import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
+
+
+export type QueryForUnionQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type QueryForUnionQuery = { __typename?: 'Query', unionExample: { __typename: 'Author' } | { __typename: 'Shelf' } };
+
+"
+`;
+
 exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: query_with_exports.generated.ts 1`] = `
 "import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
 

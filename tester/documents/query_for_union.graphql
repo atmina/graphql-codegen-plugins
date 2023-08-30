@@ -1,0 +1,5 @@
+query QueryForUnion {
+    unionExample {
+        __typename
+    }
+}
