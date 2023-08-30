@@ -1,5 +1,11 @@
 # @atmina/local-typescript-operations
 
+## 0.7.1
+
+### Patch Changes
+
+- 5f8dc3e: Prevent unions from being generated in operation files
+
 ## 0.7.0
 
 ### Minor Changes
