@@ -21,7 +21,7 @@ import {
   SelectionSetToObject,
   wrapTypeWithModifiers,
 } from '@graphql-codegen/visitor-plugin-common';
-import {CodegenPlugin, getBaseType, PluginFunction, Types} from '@graphql-codegen/plugin-helpers';
+import {CodegenPlugin, getBaseType, PluginFunction, Types, oldVisit} from '@graphql-codegen/plugin-helpers';
 import {
   concatAST,
   DirectiveNode,
@@ -56,7 +56,6 @@ import {
   TypeDefinitionNode,
   TypeNode,
   VariableDefinitionNode,
-  visit,
 } from 'graphql';
 import * as autoBind from 'auto-bind';
 import {TsVisitor, TypeScriptOperationVariablesToObject} from '@graphql-codegen/typescript';
@@ -449,7 +448,7 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
       (this._processor as CustomPreResolveTypesProcessor).registerExportAlias(parentSchemaType, fieldName, exportedTypeName);
     }
 
-    const cheekyTrick = exported.map(({fieldName, exportedTypeName}) => ({name: {value: fieldName, kind: Kind.NAME}, type: exportedTypeName, kind: Kind.FIELD}));
+    const cheekyTrick: FieldNode[] = exported.map(({fieldName, exportedTypeName}) => ({name: {value: fieldName, kind: Kind.NAME}, type: exportedTypeName, kind: Kind.FIELD}));
 
     return super.buildSelectionSet(parentSchemaType, [...forwarded, ...cheekyTrick]);
   }
@@ -942,12 +941,12 @@ function getTypeContent(
   const allTypeNames = [...requiredTypeNames, ...getSubTypeNames(schema, requiredTypeNames)];
 
   const astReducer = new TypeCollectorVisitor(allTypeNames);
-  const reducedAst = visit(ast, {leave: astReducer});
+  // @ts-expect-error Mismatch between graphql and graphql-codegen
+  const reducedAst = oldVisit(ast, {leave: astReducer});
 
   const tsVisitor = new CustomTsVisitor(schema, pluginConfig);
-
   // @ts-expect-error Mismatch between graphql and graphql-codegen
-  const generatedDefinitions = visit(reducedAst, {leave: tsVisitor});
+  const generatedDefinitions = oldVisit(reducedAst, {leave: tsVisitor});
 
   return generatedDefinitions.definitions.join('\n');
 }
@@ -974,7 +973,8 @@ const plugin: PluginFunction = (schema, rawDocuments, config) => {
   ];
 
   const visitor = new CustomTypeScriptOperationsVisitor(schema, config, allFragments);
-  const result = visit(allAst, {leave: visitor});
+  // @ts-expect-error Mismatch between graphql and graphql-codegen
+  const result = oldVisit(allAst, {leave: visitor});
 
   const imports = config.fragmentImports
     ?.map((i: ImportDeclaration<FragmentImport>) => generateFragmentImportStatement(i, 'type'))

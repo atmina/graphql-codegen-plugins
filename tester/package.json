@@ -10,7 +10,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.0",
     "@jest/globals": "27.5.1",
-    "graphql": "15.8.0",
+    "graphql": "16.8.0",
     "jest": "27.5.1"
   }
 }

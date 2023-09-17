@@ -14,11 +14,11 @@
   "devDependencies": {
     "@atmina/codegen-tester": "^1.1.0",
     "@types/node": "16.11.26",
-    "graphql": "15.8.0",
+    "graphql": "16.8.0",
     "typescript": "^5.0.0"
   },
   "peerDependencies": {
-    "graphql": "^15.8.0"
+    "graphql": "^15.8.0 || ^16.0.0"
   },
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^5.0.0",
