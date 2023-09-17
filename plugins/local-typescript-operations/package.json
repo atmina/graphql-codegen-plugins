@@ -1,6 +1,6 @@
 {
   "name": "@atmina/local-typescript-operations",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "GraphQL Codegen plugin allowing use of a custom @export directive and other improvements over the typescript-operations plugin",
   "main": "lib/index.js",
   "repository": "https://github.com/ATMINA/graphql-codegen-plugins.git",
@@ -12,7 +12,7 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@atmina/codegen-tester": "^1.1.0",
+    "@atmina/codegen-tester": "^1.2.0",
     "@graphql-codegen/near-operation-file-preset": "^2.5.0",
     "@types/node": "16.11.26",
     "graphql": "16.8.0",

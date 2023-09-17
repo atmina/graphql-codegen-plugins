@@ -1,5 +1,11 @@
 # @atmina/local-typescript-operations
 
+## 0.8.0
+
+### Minor Changes
+
+- c412b7c: Upgrade to and support GraphQL 16
+
 ## 0.7.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @atmina/only-enum-types
 
+## 0.7.0
+
+### Minor Changes
+
+- c412b7c: Upgrade to and support GraphQL 16
+
 ## 0.6.0
 
 ### Minor Changes
