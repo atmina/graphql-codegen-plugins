@@ -578,7 +578,7 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
       }
       map.set(possibleType.name, {
         marker: true,
-        fieldName: exp.name.value,
+        fieldName: exp.alias?.value ?? exp.name.value,
         exportedTypeName: wrapped,
       });
     }
