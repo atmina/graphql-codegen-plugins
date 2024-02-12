@@ -1,0 +1,9 @@
+query AliasedField {
+    books(filter: {}) {
+        id
+        name: title
+        writer: author @export(exportName: "Writer") {
+            id
+        }
+    }
+}

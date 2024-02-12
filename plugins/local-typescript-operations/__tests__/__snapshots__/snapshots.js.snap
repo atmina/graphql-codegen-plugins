@@ -1,5 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: aliased_field.generated.ts 1`] = `
+"import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
+
+
+export type AliasedFieldQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type AliasedFieldQuery = { __typename?: 'Query', books: Array<{ __typename?: 'Book', writer: Writer, id: string, name: string }> };
+
+export type Writer = { __typename?: 'Author', id: string };
+"
+`;
+
 exports[`The plugin typescript-graphql-codegen should generate code that matches the snapshots: basic_mutation.generated.ts 1`] = `
 "import * as Types from '../../plugins/local-typescript-operations/documents/__generated__/types';
 
