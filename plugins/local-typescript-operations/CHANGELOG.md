@@ -1,5 +1,11 @@
 # @atmina/local-typescript-operations
 
+## 0.8.1
+
+### Patch Changes
+
+- 4cb2a21: fix: aliases not respected
+
 ## 0.8.0
 
 ### Minor Changes
