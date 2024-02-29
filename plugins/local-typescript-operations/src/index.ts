@@ -62,11 +62,18 @@ import {TsVisitor, TypeScriptOperationVariablesToObject} from '@graphql-codegen/
 import {Maybe} from 'graphql/jsutils/Maybe';
 
 // Copied from selection-set-to-object.ts in @graphql-codegen/visitor-plugin-common
-declare type FragmentSpreadUsage = {
+type FragmentSpreadUsage = {
   fragmentName: string;
   typeName: string;
   onType: string;
   selectionNodes: Array<SelectionNode>;
+  fragmentDirectives?: DirectiveNode[];
+};
+
+interface DependentType {
+  name: string;
+  content: string;
+  isUnionType?: boolean;
 }
 
 /**
@@ -430,12 +437,16 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
   }
 
 
-  protected buildSelectionSet(parentSchemaType: GraphQLObjectType, selectionNodes: Array<SelectionNode | FragmentSpreadUsage | DirectiveNode | ExportMarkedTypeName>): {
+  protected buildSelectionSet(parentSchemaType: GraphQLObjectType, selectionNodes: Array<SelectionNode | FragmentSpreadUsage | DirectiveNode | ExportMarkedTypeName>, options: {
+    unsetTypes?: boolean;
+    parentFieldName?: string;
+  }): {
     typeInfo: {
       name: string;
       type: string;
     };
     fields: string[];
+    dependentTypes: DependentType[];
   } {
     const isExportMarkedType = (
       selectionNode: SelectionNode | FragmentSpreadUsage | DirectiveNode | ExportMarkedTypeName,
@@ -450,7 +461,7 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
 
     const cheekyTrick: FieldNode[] = exported.map(({fieldName, exportedTypeName}) => ({name: {value: fieldName, kind: Kind.NAME}, type: exportedTypeName, kind: Kind.FIELD}));
 
-    return super.buildSelectionSet(parentSchemaType, [...forwarded, ...cheekyTrick]);
+    return super.buildSelectionSet(parentSchemaType, [...forwarded, ...cheekyTrick], options);
   }
 
   /**
@@ -533,7 +544,7 @@ class CustomSelectionSetToObject extends SelectionSetToObject {
     const exported = selectionNodes.filter(isExportMarkedType);
     const forwarded = selectionNodes.filter((node) => !isExportMarkedType(node)) as (SelectionNode | FragmentSpreadUsage | DirectiveNode)[];
 
-    const superSelectionSet = super.buildSelectionSet(parentSchemaType, forwarded);
+    const superSelectionSet = super.buildSelectionSet(parentSchemaType, forwarded, {});
     const superBuildString = super.selectionSetStringFromFields(superSelectionSet.fields.filter((f) => !!f)) ?? '';
 
     if (exported.length === 0) {

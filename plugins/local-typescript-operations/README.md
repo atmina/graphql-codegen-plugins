@@ -5,7 +5,8 @@ Compatibility table for the `@graphql-codegen/visitor-plugin-common` library:
 | `@graphql-codegen/visitor-plugin-common` | `@atmina/local-typescript-operations` |
 |------------------------------------------|---------------------------------------|
 | < 2.8.0                                  | <= 0.5.0                              |
-| \>= 2.8.0                                | \>= 0.6.0                             |
+| \>= 2.8.0 < 4.1.0                        | \>= 0.6.0                             |
+| \>= 4.1.0                                | \>= 0.9.0                             |
 
 <sub>`@graphql-codegen/visitor-plugin-common@2.8.0` introduced a breaking change to the public API of one of the classes
 used in this plugin. Please ensure you are using the matching version following the table above. More information can be
