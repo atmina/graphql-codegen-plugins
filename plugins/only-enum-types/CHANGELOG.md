@@ -1,5 +1,11 @@
 # @atmina/only-enum-types
 
+## 0.8.0
+
+### Minor Changes
+
+- c7f65c4: Upgrade to and support >=visitor-plugin-common@4.1.0
+
 ## 0.7.0
 
 ### Minor Changes

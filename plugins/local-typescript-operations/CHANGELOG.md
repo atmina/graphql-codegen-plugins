@@ -1,5 +1,11 @@
 # @atmina/local-typescript-operations
 
+## 0.9.0
+
+### Minor Changes
+
+- c7f65c4: Upgrade to and support >=visitor-plugin-common@4.1.0
+
 ## 0.8.1
 
 ### Patch Changes
